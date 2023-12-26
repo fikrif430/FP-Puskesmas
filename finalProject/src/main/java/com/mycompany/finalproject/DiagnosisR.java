@@ -6,9 +6,9 @@ package com.mycompany.finalproject;
 
 /**
  *
- * @author 
+ * @author s
  */
-public class Diagnosis {
+public class DiagnosisR {
         String noKtp;
         String namaPasien;
         String Tgllahir;
@@ -17,7 +17,7 @@ public class Diagnosis {
         String Resep;
 
 
-    public Diagnosis(String noKtp, String namaPasien, String Tgllahir, String Asuransi, String Diag, String Resep) {
+    public DiagnosisR(String noKtp, String namaPasien, String Tgllahir, String Asuransi, String Diag, String Resep) {
         this.noKtp = noKtp;
         this.namaPasien = namaPasien;
         this.Tgllahir = Tgllahir;
@@ -26,7 +26,7 @@ public class Diagnosis {
         this.Resep = Resep;
     }
 
-    public Diagnosis() {
+    public DiagnosisR() {
     }
     
     public String getNoKtp() {

@@ -4,6 +4,7 @@
  */
 package com.mycompany.finalproject;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,14 +19,15 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-public class ResepObat implements Runnable {
+public class DiagnosisPasien implements Runnable {
 
     JFrame f;
     Thread t = null;
     JButton b, bb;
-    JLabel jJudul, jKtp, jNama, jTgl, jAsuransi, jDiagnosis, jResep;
+    JLabel jJudul, jKtp, jNama, jTgl, jAsuransi, jDiagnosis;
     DefaultListModel modelPesan = new DefaultListModel();
     JList listPesan = new JList(modelPesan);
+    Diagnosis diag = new Diagnosis();
     DiagnosisR diagr = new DiagnosisR();
     Properties props = new Properties();
     JTextField txtKtp = new JTextField();
@@ -33,9 +35,8 @@ public class ResepObat implements Runnable {
     JTextField txtNama = new JTextField();
     JTextField txtDiagnosis = new JTextField();
     JTextField txtTgllahir = new JTextField();
-    JTextArea txtResep = new JTextArea();
 
-    ResepObat() {
+    DiagnosisPasien() {
         f = new JFrame();
         t = new Thread(this);
         t.start();
@@ -47,7 +48,6 @@ public class ResepObat implements Runnable {
         jTgl = new JLabel();
         jAsuransi = new JLabel();
         jDiagnosis = new JLabel();
-        jResep = new JLabel();
 
         b.setText("Simpan");
         b.setBounds(200, 430, 100, 40);
@@ -58,18 +58,17 @@ public class ResepObat implements Runnable {
             System.exit(0);
             //simpanKeDatabase();
         });
-        bb.setText("Update");
+        bb.setText("Resep");
         bb.setBounds(330, 430, 100, 40);
         f.add(bb);
         bb.addActionListener((java.awt.event.ActionEvent evt) -> {
-            Update();
-
+            kirimResep();
             //simpanKeDatabase();
         });
 
         jJudul.setBounds(300, 10, 460, 20);
         jJudul.setVisible(true);
-        jJudul.setText("RESEP OBAT");
+        jJudul.setText("DIAGNOSIS PASIEN");
         f.add(jJudul);
 
         listPesan.setBounds(10, 60, 660, 130);
@@ -116,16 +115,8 @@ public class ResepObat implements Runnable {
         txtDiagnosis.setVisible(true);
         f.add(txtDiagnosis);
 
-        jResep.setBounds(50, 320, 460, 20);
-        jResep.setVisible(true);
-        jResep.setText("Catatan Resep");
-        f.add(jResep);
-        txtResep.setBounds(200, 320, 460, 90);
-        txtResep.setVisible(true);
-        f.add(txtResep);
-
         f.setSize(700, 550);
-        f.setTitle("Resep Obat");
+        f.setTitle("Diagnosis Pasien");
         f.setLayout(null);
         f.setVisible(true);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -136,23 +127,24 @@ public class ResepObat implements Runnable {
         try {
             Properties props = new Properties();
             props.setProperty("bootstrap.servers", "localhost:9092");
-            props.setProperty("group.id", "diagMySql");
+            props.setProperty("group.id", "diagnMySql");
             props.setProperty("enable.auto.commit", "true");
             props.setProperty("auto.commit.interval.ms", "1000");
             props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
             props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
             KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList("resep"));
+            consumer.subscribe(Arrays.asList("topikmahasiswa"));
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {
                     try {
-                        diagr.toObject(record.value());
-                        txtKtp.setText(diagr.getNoKtp());
-                        txtNama.setText(diagr.getNamaPasien());
-                        txtTgllahir.setText(diagr.getTgllahir());
-                        txtAsuransi.setText(diagr.getAsuransi());
-                        txtDiagnosis.setText(diagr.getDiag());
+                        diag.toObject(record.value());
+                        txtKtp.setText(diag.getNoKtp());
+                        txtNama.setText(diag.getNamaPasien());
+                        txtTgllahir.setText(diag.getTgllahir());
+                        txtAsuransi.setText(diag.getAsuransi());
+                        txtDiagnosis.setText(diag.getDiag());
                         System.out.printf("offset = %d, key = %s, value = %s%n, Partition = %d, Topik = %s ",
                                 record.offset(), record.key(), record.value(), record.partition(), record.topic());
                         modelPesan.add(modelPesan.getSize(), record.value());
@@ -169,12 +161,13 @@ public class ResepObat implements Runnable {
         }
     }
 
-    void Update() {
-        diagr.setResep(txtResep.getText());
-        try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
-            producer.send(new ProducerRecord<>("resep", "", diagr.toString()));
-            run();
-        }
+    private void kosongkan() {
+        txtNama.setText("");
+        txtKtp.setText("");
+        txtTgllahir.setText("");
+        txtDiagnosis.setText("");
+        txtAsuransi.setText("");
+        txtNama.requestFocus();
     }
 
     public void simpanKeDatabase() {
@@ -189,18 +182,17 @@ public class ResepObat implements Runnable {
             System.out.println("Koneksi gagal : " + e.getMessage());
         }
 //Buat perintah Insert SQL
-        String sql = " insert into tbresep (noKtp, namaPasien, Tgllahir, Asuransi,Diagnosis, Resep)"
+        String sql = " insert into tbresep (noKtp, namaPasien, Tgllahir, Asuransi,Diagnosis)"
                 + " values (?, ?, ?, ?, ?, ?)";
 //isi field dengan data
         PreparedStatement preparedStmt = null;
         try {
             preparedStmt = conn.prepareStatement(sql);
-            preparedStmt.setString(1, diagr.getNoKtp());
-            preparedStmt.setString(2, diagr.getNamaPasien());
-            preparedStmt.setString(3, diagr.getTgllahir());
-            preparedStmt.setString(4, diagr.getAsuransi());
-            preparedStmt.setString(5, diagr.getDiag());
-            preparedStmt.setString(6, diagr.getResep());
+            preparedStmt.setString(1, diag.getNoKtp());
+            preparedStmt.setString(2, diag.getNamaPasien());
+            preparedStmt.setString(3, diag.getTgllahir());
+            preparedStmt.setString(4, diag.getAsuransi());
+            preparedStmt.setString(5, diag.getDiag());
         } catch (SQLException ex) {
             System.out.println("Statement eror : " + ex.getMessage());
         }
@@ -218,7 +210,24 @@ public class ResepObat implements Runnable {
         }
     }
 
+    public void kirimResep() {
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "localhost:9092");
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        diagr.setNoKtp(txtKtp.getText());
+        diagr.setNamaPasien(txtNama.getText());
+        diagr.setTgllahir(txtTgllahir.getText());
+        diagr.setDiag(txtDiagnosis.getText());
+        diagr.setAsuransi(txtAsuransi.getText());
+        try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
+            producer.send(new ProducerRecord<>("resep", "", diagr.toString()));
+        }
+
+        kosongkan();
+    }
+
     public static void main(String[] args) {
-        ResepObat a = new ResepObat();
+        DiagnosisPasien a = new DiagnosisPasien();
     }
 }
