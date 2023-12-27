@@ -57,7 +57,6 @@ public class DiagnosisPasien implements Runnable {
         b.addActionListener((java.awt.event.ActionEvent evt) -> {
             simpanKeDatabase();
 
-            System.exit(0);
             //simpanKeDatabase();
         });
         bb.setText("Resep");
@@ -194,7 +193,7 @@ public class DiagnosisPasien implements Runnable {
             System.out.println("Koneksi gagal : " + e.getMessage());
         }
 //Buat perintah Insert SQL
-        String sql = " insert into tbresep (noKtp, namaPasien, Dokter, Tgllahir, Asuransi,Diagnosis)"
+        String sql = " insert into tbdiag (noKtp, namaPasien, Dokter, Tgllahir, Asuransi,Diagnosis)"
                 + " values (?, ?, ?, ?, ?, ?)";
 //isi field dengan data
         PreparedStatement preparedStmt = null;
@@ -237,7 +236,15 @@ public class DiagnosisPasien implements Runnable {
         try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
             producer.send(new ProducerRecord<>("resep", "", diagr.toString()));
         }
-
+        diag.setNoKtp(txtKtp.getText());
+        diag.setNamaPasien(txtNama.getText());
+        diag.setDokter(txtDokter.getText());
+        diag.setTgllahir(txtTgllahir.getText());
+        diag.setDiag(txtDiagnosis.getText());
+        diag.setAsuransi(txtAsuransi.getText());
+        try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
+            producer.send(new ProducerRecord<>("topikmahasiswa", "", diag.toString()));
+        }
         kosongkan();
     }
 

@@ -56,9 +56,7 @@ public class ResepObat implements Runnable {
         f.add(b);
         b.addActionListener((java.awt.event.ActionEvent evt) -> {
             simpanKeDatabase();
-
-            System.exit(0);
-            //simpanKeDatabase();
+            kosongkan();
         });
         bb.setText("Update");
         bb.setBounds(330, 430, 100, 40);
@@ -184,8 +182,19 @@ public class ResepObat implements Runnable {
         diagr.setResep(txtResep.getText());
         try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
             producer.send(new ProducerRecord<>("resep", "", diagr.toString()));
-            run();
         }
+        run();
+    }
+
+    public void kosongkan() {
+        txtNama.setText("");
+        txtKtp.setText("");
+        txtDokter.setText("");
+        txtTgllahir.setText("");
+        txtDiagnosis.setText("");
+        txtAsuransi.setText("");
+        txtResep.setText("");
+        txtNama.requestFocus();
     }
 
     public void simpanKeDatabase() {

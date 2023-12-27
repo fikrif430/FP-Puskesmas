@@ -102,7 +102,7 @@ public class Diagnosis {
         if (noKtpIndex != -1 && namaPasienIndex != -1 && DokterIndex != -1 && tgllahirIndex != -1 && asuransiIndex != -1 && diagIndex != -1) {
             noKtp = extractValue(string, noKtpIndex + 6, namaPasienIndex - 1);
             namaPasien = extractValue(string, namaPasienIndex + 11, DokterIndex - 1);
-            Dokter = extractValue(string, DokterIndex + 6, tgllahirIndex - 1);
+            Dokter = extractValue(string, DokterIndex + 7, tgllahirIndex - 1);
             Tgllahir = extractValue(string, tgllahirIndex + 9, asuransiIndex - 1);
             Asuransi = extractValue(string, asuransiIndex + 9, diagIndex - 1);
             Diag = extractValue(string, diagIndex + 5, string.indexOf("]") - 1);
