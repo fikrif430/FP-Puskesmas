@@ -23,7 +23,7 @@ public class ResepObat implements Runnable {
     JFrame f;
     Thread t = null;
     JButton b, bb;
-    JLabel jJudul, jKtp, jNama, jTgl, jAsuransi, jDiagnosis, jResep;
+    JLabel jJudul, jKtp, jNama, jTgl, jAsuransi, jDiagnosis, jResep, jDokter;
     DefaultListModel modelPesan = new DefaultListModel();
     JList listPesan = new JList(modelPesan);
     DiagnosisR diagr = new DiagnosisR();
@@ -33,6 +33,7 @@ public class ResepObat implements Runnable {
     JTextField txtNama = new JTextField();
     JTextField txtDiagnosis = new JTextField();
     JTextField txtTgllahir = new JTextField();
+    JTextField txtDokter = new JTextField();
     JTextArea txtResep = new JTextArea();
 
     ResepObat() {
@@ -46,6 +47,7 @@ public class ResepObat implements Runnable {
         jKtp = new JLabel();
         jTgl = new JLabel();
         jAsuransi = new JLabel();
+        jDokter = new JLabel();
         jDiagnosis = new JLabel();
         jResep = new JLabel();
 
@@ -92,35 +94,43 @@ public class ResepObat implements Runnable {
         txtNama.setVisible(true);
         f.add(txtNama);
 
-        jTgl.setBounds(50, 250, 460, 20);
+        jDokter.setBounds(50, 250, 460, 20);
+        jDokter.setVisible(true);
+        jDokter.setText("Dokter");
+        f.add(jDokter);
+        txtDokter.setBounds(200, 250, 460, 20);
+        txtDokter.setVisible(true);
+        f.add(txtDokter);
+
+        jTgl.setBounds(50, 270, 460, 20);
         jTgl.setVisible(true);
         jTgl.setText("Tanggal Lahir Pasien");
         f.add(jTgl);
-        txtTgllahir.setBounds(200, 250, 460, 20);
+        txtTgllahir.setBounds(200, 270, 460, 20);
         txtTgllahir.setVisible(true);
         f.add(txtTgllahir);
 
-        jAsuransi.setBounds(50, 270, 460, 20);
+        jAsuransi.setBounds(50, 290, 460, 20);
         jAsuransi.setVisible(true);
         jAsuransi.setText("Jenis Asuransi");
         f.add(jAsuransi);
-        txtAsuransi.setBounds(200, 270, 460, 20);
+        txtAsuransi.setBounds(200, 290, 460, 20);
         txtAsuransi.setVisible(true);
         f.add(txtAsuransi);
 
-        jDiagnosis.setBounds(50, 290, 460, 20);
+        jDiagnosis.setBounds(50, 310, 460, 20);
         jDiagnosis.setVisible(true);
         jDiagnosis.setText("Diagnosis");
         f.add(jDiagnosis);
-        txtDiagnosis.setBounds(200, 290, 460, 20);
+        txtDiagnosis.setBounds(200, 310, 460, 20);
         txtDiagnosis.setVisible(true);
         f.add(txtDiagnosis);
 
-        jResep.setBounds(50, 320, 460, 20);
+        jResep.setBounds(50, 330, 460, 20);
         jResep.setVisible(true);
         jResep.setText("Catatan Resep");
         f.add(jResep);
-        txtResep.setBounds(200, 320, 460, 90);
+        txtResep.setBounds(200, 330, 460, 90);
         txtResep.setVisible(true);
         f.add(txtResep);
 
@@ -150,6 +160,7 @@ public class ResepObat implements Runnable {
                         diagr.toObject(record.value());
                         txtKtp.setText(diagr.getNoKtp());
                         txtNama.setText(diagr.getNamaPasien());
+                        txtDokter.setText(diagr.getDokter());
                         txtTgllahir.setText(diagr.getTgllahir());
                         txtAsuransi.setText(diagr.getAsuransi());
                         txtDiagnosis.setText(diagr.getDiag());
@@ -189,18 +200,19 @@ public class ResepObat implements Runnable {
             System.out.println("Koneksi gagal : " + e.getMessage());
         }
 //Buat perintah Insert SQL
-        String sql = " insert into tbresep (noKtp, namaPasien, Tgllahir, Asuransi,Diagnosis, Resep)"
-                + " values (?, ?, ?, ?, ?, ?)";
+        String sql = " insert into tbresep (noKtp, namaPasien, Dokter, Tgllahir, Diagnosis, Asuransi, Resep)"
+                + " values (?, ?, ?, ?, ?, ?, ?)";
 //isi field dengan data
         PreparedStatement preparedStmt = null;
         try {
             preparedStmt = conn.prepareStatement(sql);
             preparedStmt.setString(1, diagr.getNoKtp());
             preparedStmt.setString(2, diagr.getNamaPasien());
-            preparedStmt.setString(3, diagr.getTgllahir());
-            preparedStmt.setString(4, diagr.getAsuransi());
+            preparedStmt.setString(3, diagr.getDokter());
+            preparedStmt.setString(4, diagr.getTgllahir());
             preparedStmt.setString(5, diagr.getDiag());
-            preparedStmt.setString(6, diagr.getResep());
+            preparedStmt.setString(6, diagr.getAsuransi());
+            preparedStmt.setString(7, diagr.getResep());
         } catch (SQLException ex) {
             System.out.println("Statement eror : " + ex.getMessage());
         }

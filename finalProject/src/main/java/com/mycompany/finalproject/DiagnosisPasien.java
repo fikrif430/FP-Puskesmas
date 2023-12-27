@@ -24,7 +24,7 @@ public class DiagnosisPasien implements Runnable {
     JFrame f;
     Thread t = null;
     JButton b, bb;
-    JLabel jJudul, jKtp, jNama, jTgl, jAsuransi, jDiagnosis;
+    JLabel jJudul, jKtp, jNama, jTgl, jAsuransi, jDiagnosis, jDokter;
     DefaultListModel modelPesan = new DefaultListModel();
     JList listPesan = new JList(modelPesan);
     Diagnosis diag = new Diagnosis();
@@ -35,6 +35,7 @@ public class DiagnosisPasien implements Runnable {
     JTextField txtNama = new JTextField();
     JTextField txtDiagnosis = new JTextField();
     JTextField txtTgllahir = new JTextField();
+    JTextField txtDokter = new JTextField();
 
     DiagnosisPasien() {
         f = new JFrame();
@@ -48,6 +49,7 @@ public class DiagnosisPasien implements Runnable {
         jTgl = new JLabel();
         jAsuransi = new JLabel();
         jDiagnosis = new JLabel();
+        jDokter = new JLabel();
 
         b.setText("Simpan");
         b.setBounds(200, 430, 100, 40);
@@ -91,27 +93,35 @@ public class DiagnosisPasien implements Runnable {
         txtNama.setVisible(true);
         f.add(txtNama);
 
-        jTgl.setBounds(50, 250, 460, 20);
+        jDokter.setBounds(50, 250, 460, 20);
+        jDokter.setVisible(true);
+        jDokter.setText("Dokter");
+        f.add(jDokter);
+        txtDokter.setBounds(200, 250, 460, 20);
+        txtDokter.setVisible(true);
+        f.add(txtDokter);
+
+        jTgl.setBounds(50, 270, 460, 20);
         jTgl.setVisible(true);
         jTgl.setText("Tanggal Lahir Pasien");
         f.add(jTgl);
-        txtTgllahir.setBounds(200, 250, 460, 20);
+        txtTgllahir.setBounds(200, 270, 460, 20);
         txtTgllahir.setVisible(true);
         f.add(txtTgllahir);
 
-        jAsuransi.setBounds(50, 270, 460, 20);
+        jAsuransi.setBounds(50, 290, 460, 20);
         jAsuransi.setVisible(true);
         jAsuransi.setText("Jenis Asuransi");
         f.add(jAsuransi);
-        txtAsuransi.setBounds(200, 270, 460, 20);
+        txtAsuransi.setBounds(200, 290, 460, 20);
         txtAsuransi.setVisible(true);
         f.add(txtAsuransi);
 
-        jDiagnosis.setBounds(50, 290, 460, 20);
+        jDiagnosis.setBounds(50, 310, 460, 20);
         jDiagnosis.setVisible(true);
         jDiagnosis.setText("Diagnosis");
         f.add(jDiagnosis);
-        txtDiagnosis.setBounds(200, 290, 460, 20);
+        txtDiagnosis.setBounds(200, 310, 460, 20);
         txtDiagnosis.setVisible(true);
         f.add(txtDiagnosis);
 
@@ -142,6 +152,7 @@ public class DiagnosisPasien implements Runnable {
                         diag.toObject(record.value());
                         txtKtp.setText(diag.getNoKtp());
                         txtNama.setText(diag.getNamaPasien());
+                        txtDokter.setText(diag.getDokter());
                         txtTgllahir.setText(diag.getTgllahir());
                         txtAsuransi.setText(diag.getAsuransi());
                         txtDiagnosis.setText(diag.getDiag());
@@ -161,9 +172,10 @@ public class DiagnosisPasien implements Runnable {
         }
     }
 
-    private void kosongkan() {
+    public void kosongkan() {
         txtNama.setText("");
         txtKtp.setText("");
+        txtDokter.setText("");
         txtTgllahir.setText("");
         txtDiagnosis.setText("");
         txtAsuransi.setText("");
@@ -182,7 +194,7 @@ public class DiagnosisPasien implements Runnable {
             System.out.println("Koneksi gagal : " + e.getMessage());
         }
 //Buat perintah Insert SQL
-        String sql = " insert into tbresep (noKtp, namaPasien, Tgllahir, Asuransi,Diagnosis)"
+        String sql = " insert into tbresep (noKtp, namaPasien, Dokter, Tgllahir, Asuransi,Diagnosis)"
                 + " values (?, ?, ?, ?, ?, ?)";
 //isi field dengan data
         PreparedStatement preparedStmt = null;
@@ -190,9 +202,10 @@ public class DiagnosisPasien implements Runnable {
             preparedStmt = conn.prepareStatement(sql);
             preparedStmt.setString(1, diag.getNoKtp());
             preparedStmt.setString(2, diag.getNamaPasien());
-            preparedStmt.setString(3, diag.getTgllahir());
-            preparedStmt.setString(4, diag.getAsuransi());
-            preparedStmt.setString(5, diag.getDiag());
+            preparedStmt.setString(3, diag.getDokter());
+            preparedStmt.setString(4, diag.getTgllahir());
+            preparedStmt.setString(5, diag.getAsuransi());
+            preparedStmt.setString(6, diag.getDiag());
         } catch (SQLException ex) {
             System.out.println("Statement eror : " + ex.getMessage());
         }
@@ -217,6 +230,7 @@ public class DiagnosisPasien implements Runnable {
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         diagr.setNoKtp(txtKtp.getText());
         diagr.setNamaPasien(txtNama.getText());
+        diagr.setDokter(txtDokter.getText());
         diagr.setTgllahir(txtTgllahir.getText());
         diagr.setDiag(txtDiagnosis.getText());
         diagr.setAsuransi(txtAsuransi.getText());
