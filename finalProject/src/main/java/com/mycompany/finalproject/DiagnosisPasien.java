@@ -154,7 +154,6 @@ public class DiagnosisPasien implements Runnable {
                         txtDokter.setText(diag.getDokter());
                         txtTgllahir.setText(diag.getTgllahir());
                         txtAsuransi.setText(diag.getAsuransi());
-                        txtDiagnosis.setText(diag.getDiag());
                         System.out.printf("offset = %d, key = %s, value = %s%n, Partition = %d, Topik = %s ",
                                 record.offset(), record.key(), record.value(), record.partition(), record.topic());
                         modelPesan.add(modelPesan.getSize(), record.value());
@@ -187,13 +186,13 @@ public class DiagnosisPasien implements Runnable {
         Connection conn = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            urlvalue = "jdbc:mysql://localhost/dbmahasiswa?user=root&password=";
+            urlvalue = "jdbc:mysql://localhost/dbpuskesmas?user=root&password=";
             conn = DriverManager.getConnection(urlvalue);
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println("Koneksi gagal : " + e.getMessage());
         }
 //Buat perintah Insert SQL
-        String sql = " insert into tbdiag (noKtp, namaPasien, Dokter, Tgllahir, Asuransi,Diagnosis)"
+        String sql = " insert into tbdiagnosis (noKtp, namaPasien, Dokter, Tgllahir, Asuransi,Diagnosis)"
                 + " values (?, ?, ?, ?, ?, ?)";
 //isi field dengan data
         PreparedStatement preparedStmt = null;
@@ -235,15 +234,6 @@ public class DiagnosisPasien implements Runnable {
         diagr.setAsuransi(txtAsuransi.getText());
         try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
             producer.send(new ProducerRecord<>("resep", "", diagr.toString()));
-        }
-        diag.setNoKtp(txtKtp.getText());
-        diag.setNamaPasien(txtNama.getText());
-        diag.setDokter(txtDokter.getText());
-        diag.setTgllahir(txtTgllahir.getText());
-        diag.setDiag(txtDiagnosis.getText());
-        diag.setAsuransi(txtAsuransi.getText());
-        try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
-            producer.send(new ProducerRecord<>("topikmahasiswa", "", diag.toString()));
         }
         kosongkan();
     }

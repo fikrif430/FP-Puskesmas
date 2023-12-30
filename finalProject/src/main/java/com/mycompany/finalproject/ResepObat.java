@@ -198,12 +198,12 @@ public class ResepObat implements Runnable {
     }
 
     public void simpanKeDatabase() {
-//Buat Koneksi kemysql
+///Buat Koneksi kemysql
         String urlvalue = "";
         Connection conn = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            urlvalue = "jdbc:mysql://localhost/dbmahasiswa?user=root&password=";
+            urlvalue = "jdbc:mysql://localhost/dbpuskesmas?user=root&password=";
             conn = DriverManager.getConnection(urlvalue);
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println("Koneksi gagal : " + e.getMessage());
@@ -235,7 +235,7 @@ public class ResepObat implements Runnable {
 //Tutup Koneksi
             conn.close();
         } catch (SQLException ex) {
-            System.out.println("Tutup Koneksi Gagal : " + ex.getMessage());
+//////            System.out.println("Tutup Koneksi Gagal : " + ex.getMessage());
         }
     }
 

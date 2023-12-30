@@ -35,7 +35,7 @@ public class formPendaftaran extends javax.swing.JFrame {
         psn.setNoHp(txtHp.getText());
         psn.setAsuransi(txtAsuransi.getText());
         try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
-            producer.send(new ProducerRecord<>("topikpasien", "", psn.toString()));
+            producer.send(new ProducerRecord<>("topikmahasiswa", "", psn.toString()));
         }
         kosongkan();
     }
