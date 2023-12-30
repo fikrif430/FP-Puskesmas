@@ -86,6 +86,6 @@ public class Pasien {
         alamatPasien = string.substring(string.indexOf("alamatPasien") + 13, string.indexOf("TTGL") - 1);
         TTGL = string.substring(string.indexOf("TTGL") + 5, string.indexOf("noHp") - 1);
         noHp = string.substring(string.indexOf("noHp") + 5, string.indexOf("asuransi") - 1);
-        asuransi = string.substring(string.indexOf("noHp") + 9, string.indexOf("]") - 1);
+        asuransi = string.substring(string.indexOf("asuransi") + 9, string.indexOf("]") - 1);
 }
 }

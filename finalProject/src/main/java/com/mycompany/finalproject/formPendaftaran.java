@@ -35,7 +35,7 @@ public class formPendaftaran extends javax.swing.JFrame {
         psn.setNoHp(txtHp.getText());
         psn.setAsuransi(txtAsuransi.getText());
         try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
-            producer.send(new ProducerRecord<>("topikmahasiswa", "", psn.toString()));
+            producer.send(new ProducerRecord<>("topikpoli", "", psn.toString()));
         }
         kosongkan();
     }
@@ -163,7 +163,7 @@ public class formPendaftaran extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
-        props.put("bootstrap.servers", "localhost:9092");
+        props.put("bootstrap.servers", "192.168.180.183:9092,192.168.180.253:9093,192.168.180.117:9094");
         props.put("linger.ms", 1);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");

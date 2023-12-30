@@ -135,7 +135,7 @@ public class DiagnosisPasien implements Runnable {
     public void run() {
         try {
             Properties props = new Properties();
-            props.setProperty("bootstrap.servers", "localhost:9092");
+            props.setProperty("bootstrap.servers", "192.168.180.183:9092,192.168.180.253:9093,192.168.180.117:9094");
             props.setProperty("group.id", "diagnMySql");
             props.setProperty("enable.auto.commit", "true");
             props.setProperty("auto.commit.interval.ms", "1000");
@@ -143,7 +143,7 @@ public class DiagnosisPasien implements Runnable {
             props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
             KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList("topikmahasiswa"));
+            consumer.subscribe(Arrays.asList("topikdiagnosis"));
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {
@@ -223,7 +223,7 @@ public class DiagnosisPasien implements Runnable {
 
     public void kirimResep() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
+        props.put("bootstrap.servers", "192.168.180.183:9092,192.168.180.253:9093,192.168.180.117:9094");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         diagr.setNoKtp(txtKtp.getText());
@@ -233,7 +233,7 @@ public class DiagnosisPasien implements Runnable {
         diagr.setDiag(txtDiagnosis.getText());
         diagr.setAsuransi(txtAsuransi.getText());
         try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
-            producer.send(new ProducerRecord<>("resep", "", diagr.toString()));
+            producer.send(new ProducerRecord<>("topikresep", "", diagr.toString()));
         }
         kosongkan();
     }

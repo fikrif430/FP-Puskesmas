@@ -143,14 +143,14 @@ public class ResepObat implements Runnable {
     public void run() {
         try {
             Properties props = new Properties();
-            props.setProperty("bootstrap.servers", "localhost:9092");
+            props.setProperty("bootstrap.servers", "192.168.180.183:9092,192.168.180.253:9093,192.168.180.117:9094");
             props.setProperty("group.id", "diagMySql");
             props.setProperty("enable.auto.commit", "true");
             props.setProperty("auto.commit.interval.ms", "1000");
             props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
             props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
             KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList("resep"));
+            consumer.subscribe(Arrays.asList("topikresep"));
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {
@@ -181,7 +181,7 @@ public class ResepObat implements Runnable {
     void Update() {
         diagr.setResep(txtResep.getText());
         try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
-            producer.send(new ProducerRecord<>("resep", "", diagr.toString()));
+            producer.send(new ProducerRecord<>("topikresep", "", diagr.toString()));
         }
         run();
     }
