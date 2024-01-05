@@ -5,14 +5,19 @@
 package com.mycompany.finalproject;
 
 import java.util.Properties;
+import org.apache.kafka.clients.producer.Callback;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 
 /**
  *
  * @author Yukki
  */
 public class formPendaftaran extends javax.swing.JFrame {
+
+    KafkaProducer<String, String> producer;
 
     public formPendaftaran() {
         initComponents();
@@ -26,6 +31,9 @@ public class formPendaftaran extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     Properties props = new Properties();
     Pasien psn = new Pasien();
+    String topic = "coba";
+    int partitionCount = 5;
+    int currentPartition = 0;
 
     void kirimData() {
         psn.setNoKtp(txtKtp.getText());
@@ -34,9 +42,38 @@ public class formPendaftaran extends javax.swing.JFrame {
         psn.setTTGL(txtTtgl.getText());
         psn.setNoHp(txtHp.getText());
         psn.setAsuransi(txtAsuransi.getText());
-        try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
-            producer.send(new ProducerRecord<>("topikpoli", "", psn.toString()));
+
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "192.168.159.183:9092,192.168.159.253:9093");
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        try ( Producer<String, String> producer = new KafkaProducer<>(props)) {
+            for (int i = 0; i < 1; i++) {
+                ProducerRecord<String, String> record = new ProducerRecord<>(topic, currentPartition, null, psn.toString());
+                producer.send(record, new Callback() {
+                    @Override
+                    public void onCompletion(RecordMetadata metadata, Exception exception) {
+                        if (exception == null) {
+                            System.out.println("Pesan berhasil dikirim ke partisi " + metadata.partition());
+                        } else {
+                            exception.printStackTrace();
+                        }
+                    }
+                });
+
+                try {
+                    Thread.sleep(1000); // Menambah waktu keterlambatan (1000 ms) sebagai contoh
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Ganti partisi untuk pesan berikutnya
+            currentPartition = (currentPartition + 1) % partitionCount;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         kosongkan();
     }
 
@@ -163,7 +200,7 @@ public class formPendaftaran extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
-        props.put("bootstrap.servers", "192.168.180.183:9092,192.168.180.253:9093,192.168.180.117:9094");
+        props.put("bootstrap.servers", "192.168.159.183:9092");
         props.put("linger.ms", 1);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -223,7 +260,7 @@ public class formPendaftaran extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void kosongkan() {
-       txtKtp.setText("");
+        txtKtp.setText("");
         txtNama.setText("");
         txtAlamat.setText("");
         txtTtgl.setText("");
