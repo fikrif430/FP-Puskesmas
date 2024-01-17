@@ -25,7 +25,7 @@ public class SuratRujukan implements Runnable {
     JFrame f;
     Thread t = null;
     JButton b, bb;
-    JLabel jJudul, jIdRujukan, jKtp, jIdDokter, jTglRujukan, jNamaPasien, jAlamatPasien, jUmurPasien, jTTGL, jRsRujukan;
+    JLabel jJudul, jIdRujukan, jKtp, jIdDokter, jTglRujukan, jNamaPasien, jAlamatPasien, jUmurPasien, jTTGL, jDiag, jRsRujukan;
     DefaultListModel modelPesan = new DefaultListModel();
     JList listPesan = new JList(modelPesan);
     rujukan rjn = new rujukan();
@@ -38,6 +38,7 @@ public class SuratRujukan implements Runnable {
     JTextField txtAlamatPasien = new JTextField();
     JTextField txtUmurPasien = new JTextField();
     JTextField txtTTGL = new JTextField();
+    JTextField txtDiag = new JTextField();
     JTextField txtRsRujukan = new JTextField();
     
     SuratRujukan() {
@@ -55,6 +56,7 @@ public class SuratRujukan implements Runnable {
         jAlamatPasien = new JLabel();
         jUmurPasien = new JLabel();
         jTTGL = new JLabel();
+        jDiag = new JLabel();
         jRsRujukan = new JLabel();
         
         b.setText("Simpan");
@@ -148,11 +150,19 @@ public class SuratRujukan implements Runnable {
         txtTTGL.setVisible(true);
         f.add(txtTTGL);
         
-        jRsRujukan.setBounds(50, 370, 460, 20);
+        jDiag.setBounds(50, 370, 460, 20);
+        jDiag.setVisible(true);
+        jDiag.setText("Diagnosis");
+        f.add(jDiag);
+        txtDiag.setBounds(200, 370, 460, 20);
+        txtDiag.setVisible(true);
+        f.add(txtDiag);
+        
+        jRsRujukan.setBounds(50, 390, 460, 20);
         jRsRujukan.setVisible(true);
         jRsRujukan.setText("Rumah Sakit Rujukan");
         f.add(jRsRujukan);
-        txtRsRujukan.setBounds(200, 370, 460, 20);
+        txtRsRujukan.setBounds(200, 390, 460, 20);
         txtRsRujukan.setVisible(true);
         f.add(txtRsRujukan);
 
@@ -167,7 +177,7 @@ public class SuratRujukan implements Runnable {
     public void run() {
         try {
             Properties props = new Properties();
-            props.setProperty("bootstrap.servers", "192.168.180.183:9092,192.168.180.253:9093,192.168.180.117:9094");
+            props.setProperty("bootstrap.servers", "192.168.15.183:9092,192.168.15.253:9093,192.168.15.117:9094");
             props.setProperty("group.id", "diagnMySql");
             props.setProperty("enable.auto.commit", "true");
             props.setProperty("auto.commit.interval.ms", "1000");
@@ -189,6 +199,7 @@ public class SuratRujukan implements Runnable {
                         txtAlamatPasien.setText(rjn.getAlamatPasien());
                         txtUmurPasien.setText(rjn.getUmurPasien());
                         txtTTGL.setText(rjn.getTTGL());
+                        txtDiag.setText(rjn.getDiagnosis());
                         txtRsRujukan.setText(rjn.getRsRujukan());
                         System.out.printf("offset = %d, key = %s, value = %s%n, Partition = %d, Topik = %s ",
                                 record.offset(), record.key(), record.value(), record.partition(), record.topic());
@@ -231,7 +242,7 @@ public class SuratRujukan implements Runnable {
             System.out.println("Koneksi gagal : " + e.getMessage());
         }
 //Buat perintah Insert SQL
-        String sql = " insert into tbdiagnosis (noKtp, namaPasien, Dokter, Tgllahir, Asuransi,Diagnosis)"
+        String sql = " insert into tbrujukan (idRujukan, noKTP, idDokter, tglRujukan, namaPasien, alamatPasien, umurPasien, ttgl, diagnosis, rsRujukan)"
                 + " values (?, ?, ?, ?, ?, ?)";
 //isi field dengan data
         PreparedStatement preparedStmt = null;
@@ -245,6 +256,7 @@ public class SuratRujukan implements Runnable {
             preparedStmt.setString(3, rjn.getAlamatPasien());
             preparedStmt.setString(3, rjn.getUmurPasien());
             preparedStmt.setString(4, rjn.getTTGL());
+            preparedStmt.setString(5, rjn.getDiagnosis());
             preparedStmt.setString(5, rjn.getRsRujukan());
         } catch (SQLException ex) {
             System.out.println("Statement eror : " + ex.getMessage());
