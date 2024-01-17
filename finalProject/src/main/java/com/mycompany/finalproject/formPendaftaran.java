@@ -31,7 +31,7 @@ public class formPendaftaran extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     Properties props = new Properties();
     Pasien psn = new Pasien();
-    String topic = "coba";
+    String topic = "pendaftaran";
     int partitionCount = 5;
     int currentPartition = 0;
 
@@ -44,7 +44,7 @@ public class formPendaftaran extends javax.swing.JFrame {
         psn.setAsuransi(txtAsuransi.getText());
 
         Properties props = new Properties();
-        props.put("bootstrap.servers", "192.168.159.183:9092,192.168.159.253:9093");
+        props.put("bootstrap.servers", "192.168.19.183:9092,192.168.19.253:9093,192.168.19.117:9094");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         try ( Producer<String, String> producer = new KafkaProducer<>(props)) {
@@ -95,7 +95,6 @@ public class formPendaftaran extends javax.swing.JFrame {
         btnKirim = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1280, 720));
         setSize(new java.awt.Dimension(0, 0));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
@@ -152,7 +151,7 @@ public class formPendaftaran extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(138, 138, 138)
                         .addComponent(btnKirim)))
-                .addContainerGap(305, Short.MAX_VALUE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -183,7 +182,7 @@ public class formPendaftaran extends javax.swing.JFrame {
                     .addComponent(txtAsuransi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnKirim)
-                .addContainerGap(202, Short.MAX_VALUE))
+                .addContainerGap(65, Short.MAX_VALUE))
         );
 
         pack();
@@ -200,7 +199,7 @@ public class formPendaftaran extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
-        props.put("bootstrap.servers", "192.168.159.183:9092");
+        props.put("bootstrap.servers", "192.168.19.183:9092,192.168.19.253:9093,192.168.19.117:9094");
         props.put("linger.ms", 1);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");

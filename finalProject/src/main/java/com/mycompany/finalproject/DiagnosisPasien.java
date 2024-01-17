@@ -23,7 +23,7 @@ public class DiagnosisPasien implements Runnable {
 
     JFrame f;
     Thread t = null;
-    JButton b, bb, bs;
+    JButton b, bb, bs, bo;
     JLabel jJudul, jKtp, jNama, jTgl, jAsuransi, jDiagnosis, jDokter;
     DefaultListModel modelPesan = new DefaultListModel();
     JList listPesan = new JList(modelPesan);
@@ -44,7 +44,8 @@ public class DiagnosisPasien implements Runnable {
         b = new JButton();
         bb = new JButton();
         bs = new JButton();
-
+        bo = new JButton();
+        
         jJudul = new JLabel();
         jNama = new JLabel();
         jKtp = new JLabel();
@@ -60,18 +61,24 @@ public class DiagnosisPasien implements Runnable {
             simpanKeDatabase();
         });
         bb.setText("Resep");
-        bb.setBounds(400, 430, 90, 40);
+        bb.setBounds(370, 430, 90, 40);
         f.add(bb);
         bb.addActionListener((java.awt.event.ActionEvent evt) -> {
             kirimResep();
         });
         bs.setText("Rujukan");
-        bs.setBounds(500, 430, 90, 40);
+        bs.setBounds(470, 430, 90, 40);
         f.add(bs);
         bs.addActionListener((java.awt.event.ActionEvent evt) -> {
-
+            
         });
-
+        bo.setText("Opname");
+        bo.setBounds(570, 430, 90, 40);
+        f.add(bo);
+        bo.addActionListener((java.awt.event.ActionEvent evt) -> {
+            
+        });
+        
         jJudul.setBounds(300, 10, 460, 20);
         jJudul.setVisible(true);
         jJudul.setText("DIAGNOSIS PASIEN");
@@ -140,7 +147,7 @@ public class DiagnosisPasien implements Runnable {
     public void run() {
         try {
             Properties props = new Properties();
-            props.setProperty("bootstrap.servers", "192.168.159.183:9092");
+            props.setProperty("bootstrap.servers", "192.168.15.183:9092,192.168.15.253:9093,192.168.15.117:9094");
             props.setProperty("group.id", "diagnMySql");
             props.setProperty("enable.auto.commit", "true");
             props.setProperty("auto.commit.interval.ms", "1000");
@@ -148,7 +155,7 @@ public class DiagnosisPasien implements Runnable {
             props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
             KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList("topikdiagnosis"));
+            consumer.subscribe(Arrays.asList("diagnosis"));
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {
@@ -228,7 +235,7 @@ public class DiagnosisPasien implements Runnable {
 
     public void kirimResep() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "192.168.159.183:9092");
+        props.put("bootstrap.servers", "192.168.19.183:9092,192.168.19.253:9093,192.168.19.117:9094");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         diagr.setNoKtp(txtKtp.getText());
@@ -238,7 +245,7 @@ public class DiagnosisPasien implements Runnable {
         diagr.setDiag(txtDiagnosis.getText());
         diagr.setAsuransi(txtAsuransi.getText());
         try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
-            producer.send(new ProducerRecord<>("topikresep", "", diagr.toString()));
+            producer.send(new ProducerRecord<>("resep", "", diagr.toString()));
         }
         kosongkan();
     }

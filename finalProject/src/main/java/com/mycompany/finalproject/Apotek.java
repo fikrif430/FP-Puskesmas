@@ -125,14 +125,14 @@ public class Apotek implements Runnable {
     public void run() {
         try {
             Properties props = new Properties();
-            props.setProperty("bootstrap.servers", "192.168.159.183:9092");
+            props.setProperty("bootstrap.servers", "192.168.15.183:9092,192.168.15.253:9093,192.168.15.117:9094");
             props.setProperty("group.id", "diagMySql");
             props.setProperty("enable.auto.commit", "true");
             props.setProperty("auto.commit.interval.ms", "1000");
             props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
             props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
             KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList("topikdiagnosis"));
+            consumer.subscribe(Arrays.asList("apotek"));
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {

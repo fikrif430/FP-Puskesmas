@@ -18,6 +18,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+
 /**
  *
  * @author Yukki
@@ -39,6 +40,7 @@ public class PoliKonsumerJsonMySql implements Runnable {
     JTextField txtTtgl = new JTextField();
     JTextField txtHp = new JTextField();
     JTextField txtAsuransi = new JTextField();
+
 
     PoliKonsumerJsonMySql() {
         f = new JFrame();
@@ -105,14 +107,14 @@ public class PoliKonsumerJsonMySql implements Runnable {
     public void run() {
         try {
             Properties props = new Properties();
-            props.setProperty("bootstrap.servers", "192.168.180.183:9092,192.168.180.253:9093,192.168.180.117:9094");
+            props.setProperty("bootstrap.servers", "192.168.15.183:9092,192.168.15.253:9093,192.168.15.117:9094");
             props.setProperty("group.id", "poliMySql");
             props.setProperty("enable.auto.commit", "true");
             props.setProperty("auto.commit.interval.ms", "1000");
             props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
             props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
             KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList("topikpoli"));
+            consumer.subscribe(Collections.singletonList("pendaftaran"));
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {
@@ -131,6 +133,7 @@ public class PoliKonsumerJsonMySql implements Runnable {
                         if (record.value().equalsIgnoreCase("kosongkan")) {
                             modelPesan.clear();
                         }
+
                     } catch (Exception e) {
                         System.out.println("Error : " + e.getMessage());
                     }
@@ -183,9 +186,11 @@ public class PoliKonsumerJsonMySql implements Runnable {
         }
     }
 
+
+
     public void kirimDiagnosis() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "192.168.180.183:9092,192.168.180.253:9093,192.168.180.117:9094");
+        props.put("bootstrap.servers", "192.168.15.183:9092,192.168.15.253:9093,192.168.15.117:9094");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         diag.setNoKtp(txtKtp.getText());
@@ -193,7 +198,7 @@ public class PoliKonsumerJsonMySql implements Runnable {
         diag.setTgllahir(txtTtgl.getText());
         diag.setAsuransi(txtAsuransi.getText());
         try ( Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props)) {
-            producer.send(new ProducerRecord<>("topikdiagnosis", "", diag.toString()));
+            producer.send(new ProducerRecord<>("diagnosis", "", diag.toString()));
         }
         kosongkan();
     }
